@@ -98,38 +98,38 @@ interface ScraperUserDefinedOptions {
   /**
    * The LinkedIn `li_at` session cookie value. Get this value by logging in to LinkedIn with the account you want to use for scraping.
    * Open your browser's Dev Tools and find the cookie with the name `li_at`. Use that value here.
-   * 
-   * This script uses a known session cookie of a successful login into LinkedIn, instead of an e-mail and password to set you logged in. 
+   *
+   * This script uses a known session cookie of a successful login into LinkedIn, instead of an e-mail and password to set you logged in.
    * I did this because LinkedIn has security measures by blocking login requests from unknown locations or requiring you to fill in Captcha's upon login.
-   * So, if you run this from a server and try to login with an e-mail address and password, your login could be blocked. 
+   * So, if you run this from a server and try to login with an e-mail address and password, your login could be blocked.
    * By using a known session, we prevent this from happening and allows you to use this scraper on any server on any location.
-   * 
+   *
    * You probably need to get a new session cookie value when the scraper logs show it's not logged in anymore.
    */
   sessionCookieValue: string;
   /**
    * Set to true if you want to keep the scraper session alive. This results in faster recurring scrapes.
    * But keeps your memory usage high.
-   * 
+   *
    * Default: `false`
    */
   keepAlive?: boolean;
   /**
    * Set a custom user agent if you like.
-   * 
+   *
    * Default: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36`
    */
   userAgent?: string;
   /**
-   * Use a custom timeout to set the maximum time you want to wait for the scraper 
+   * Use a custom timeout to set the maximum time you want to wait for the scraper
    * to do his job.
-   * 
+   *
    * Default: `10000` (10 seconds)
    */
   timeout?: number;
   /**
    * Start the scraper in headless mode, or not.
-   * 
+   *
    * Default: `true`
    */
   headless?: boolean;
@@ -180,11 +180,11 @@ export class LinkedInProfileScraper {
     if (!userDefinedOptions.sessionCookieValue) {
       throw new Error(`${errorPrefix} Option "sessionCookieValue" is required.`);
     }
-    
+
     if (userDefinedOptions.sessionCookieValue && typeof userDefinedOptions.sessionCookieValue !== 'string') {
       throw new Error(`${errorPrefix} Option "sessionCookieValue" needs to be a string.`);
     }
-    
+
     if (userDefinedOptions.userAgent && typeof userDefinedOptions.userAgent !== 'string') {
       throw new Error(`${errorPrefix} Option "userAgent" needs to be a string.`);
     }
@@ -192,11 +192,11 @@ export class LinkedInProfileScraper {
     if (userDefinedOptions.keepAlive !== undefined && typeof userDefinedOptions.keepAlive !== 'boolean') {
       throw new Error(`${errorPrefix} Option "keepAlive" needs to be a boolean.`);
     }
-   
+
     if (userDefinedOptions.timeout !== undefined && typeof userDefinedOptions.timeout !== 'number') {
       throw new Error(`${errorPrefix} Option "timeout" needs to be a number.`);
     }
-    
+
     if (userDefinedOptions.headless !== undefined && typeof userDefinedOptions.headless !== 'boolean') {
       throw new Error(`${errorPrefix} Option "headless" needs to be a boolean.`);
     }
@@ -376,7 +376,7 @@ export class LinkedInProfileScraper {
   /**
    * Method to block know hosts that have some kind of tracking.
    * By blocking those hosts we speed up the crawling.
-   * 
+   *
    * More info: http://winhelp2002.mvps.org/hosts.htm
    */
   private getBlockedHosts = (): object => {
@@ -519,7 +519,7 @@ export class LinkedInProfileScraper {
       statusLog(logSection, `Navigating to LinkedIn profile: ${profileUrl}`, scraperSessionId)
 
       await page.goto(profileUrl, {
-        // Use "networkidl2" here and not "domcontentloaded". 
+        // Use "networkidl2" here and not "domcontentloaded".
         // As with "domcontentloaded" some elements might not be loaded correctly, resulting in missing data.
         waitUntil: 'networkidle2',
         timeout: this.options.timeout
@@ -555,7 +555,7 @@ export class LinkedInProfileScraper {
           statusLog(logSection, `Could not find or click expand button selector "${buttonSelector}". So we skip that one.`, scraperSessionId)
         }
       }
-      
+
 
       // To give a little room to let data appear. Setting this to 0 might result in "Node is detached from document" errors
       await page.waitFor(100);
@@ -596,7 +596,7 @@ export class LinkedInProfileScraper {
         const photoElement = profileSection?.querySelector('.pv-top-card__photo') || profileSection?.querySelector('.profile-photo-edit__preview')
         const photo = photoElement?.getAttribute('src') || null
 
-        const descriptionElement = document.querySelector('.pv-about__summary-text .lt-line-clamp__raw-line') // Is outside "profileSection"
+        const descriptionElement = document.querySelector('.pv-about__summary-text') // Is outside "profileSection"
         const description = descriptionElement?.textContent || null
 
         return {
@@ -765,7 +765,7 @@ export class LinkedInProfileScraper {
 
           const titleElement = node.querySelector('.pv-entity__summary-info h3');
           const title = titleElement?.textContent || null;
-          
+
           const companyElement = node.querySelector('.pv-entity__summary-info span.pv-entity__secondary-title');
           const company = companyElement?.textContent || null;
 
